@@ -13,7 +13,7 @@ public class HelloController {
 	@GetMapping("/hello")
 	public String index() {
 		logger.info("call index");
-		return "Hello World!";
+		return "Hello World from second commit!";
 	}
 	
 }
