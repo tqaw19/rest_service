@@ -44,5 +44,14 @@ public class SolicitudRepository {
 		return solicitudes;
 	}
 	
+	public void crear(Solicitud solicitud) {
+		logger.info("crear " + solicitud);
+		
+		String sql = "insert into solicitudes (correo, tipo, motivo, captura) values (?, ?, ?, ?)";
+		
+		jdbcTemplate.update(sql, solicitud.getCorreo(), solicitud.getTipo(), solicitud.getMotivo(), solicitud.getCaptura());
+	}
+
+	
 }
 

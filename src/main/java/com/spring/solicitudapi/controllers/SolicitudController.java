@@ -1,5 +1,6 @@
 package com.spring.solicitudapi.controllers;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -12,7 +13,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.spring.solicitudapi.models.ResponseMessage;
 import com.spring.solicitudapi.models.Solicitud;
 import com.spring.solicitudapi.services.SolicitudService;
 
@@ -48,5 +54,34 @@ public class SolicitudController {
 				.header(HttpHeaders.CONTENT_LENGTH, String.valueOf(resource.contentLength()))
 				.body(resource);
 	}
+	
+	@PostMapping("/solicitudes")	// https://spring.io/guides/gs/uploading-files/
+	public ResponseMessage crear(@RequestParam(name="captura", required=false) MultipartFile captura, @RequestParam("motivo") String motivo, @RequestParam("correo") String correo, @RequestParam("tipo") String tipo) {
+		logger.info("call crear(" + captura + ", " + motivo + ", " + correo + ", " + tipo + ")");
+		
+		Solicitud solicitud = new Solicitud();
+		solicitud.setMotivo(motivo);
+		solicitud.setCorreo(correo);
+		solicitud.setTipo(tipo);
+		
+		if (captura != null && !captura.isEmpty()) {
+			try {
+				
+				solicitud.setCaptura(captura.getOriginalFilename());
+				
+				Files.copy(captura.getInputStream(), Paths.get(FILEPATH).resolve(captura.getOriginalFilename()));
+				
+			}catch(IOException e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+		
+		solicitudService.crear(solicitud);
+		
+		return ResponseMessage.success("Registro completo");
+	}
+
+	
+	
 	
 }

@@ -17,6 +17,11 @@ public class SolicitudService {
 	public List<Solicitud> listar(){
 		return solicitudRepository.listar();
 	}
+	
+	public void crear(Solicitud solicitud) {
+		solicitudRepository.crear(solicitud);
+	}
+
 }
 	
 
